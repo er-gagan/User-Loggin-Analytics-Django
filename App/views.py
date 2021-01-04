@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from .models import AuditEntry
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -23,13 +23,13 @@ def last(request):
     username = user.username
 
     userLast30daysData = AuditEntry.objects.filter(username__iexact=username)
-    for i in userLast30daysData:
-        print(i.action, i.date, i.time, i.ip, i.username)
+    # for i in userLast30daysData:
+    #     print(i.action, i.date, i.time, i.ip, i.username)
     userLoggedIn = AuditEntry.objects.filter(Q(username__iexact=username) & Q(action__iexact="user_logged_in")).count()
     userLoggedOut = AuditEntry.objects.filter(Q(username__iexact=username) & Q(action__iexact="user_logged_out")).count()
-    print("user Logged in count:",userLoggedIn)
-    print("user Logged out count:",userLoggedOut)
-    return redirect('/')
+    # print("user Logged in count:",userLoggedIn)
+    # print("user Logged out count:",userLoggedOut)
+    return render(request,'App/show.html', {'userData':userLast30daysData, 'userLoggedIn':userLoggedIn, 'userLoggedOut':userLoggedOut})
 
 def yesterday(request):
     Id = request.GET['id']
@@ -44,14 +44,13 @@ def yesterday(request):
     date = year+"-"+month+"-"+day
 
     userYesterdayData = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date))
-    for i in userYesterdayData:
-        print(i.action, i.date, i.time, i.ip, i.username)
+    # for i in userYesterdayData:
+    #     print(i.action, i.date, i.time, i.ip, i.username)
     userLoggedIn = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date) & Q(action__iexact="user_logged_in")).count()
     userLoggedOut = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date) & Q(action__iexact="user_logged_out")).count()
-    print("user Logged in count:",userLoggedIn)
-    print("user Logged out count:",userLoggedOut)
-
-    return redirect('/')
+    # print("user Logged in count:",userLoggedIn)
+    # print("user Logged out count:",userLoggedOut)
+    return render(request,'App/show.html', {'userData':userYesterdayData, 'userLoggedIn':userLoggedIn, 'userLoggedOut':userLoggedOut})
 
 def today(request):
     Id = request.GET['id']
@@ -66,10 +65,10 @@ def today(request):
     date = year+"-"+month+"-"+day
 
     userTodayData = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date))
-    for i in userTodayData:
-        print(i.action, i.date, i.time, i.ip, i.username)
+    # for i in userTodayData:
+    #     print(i.action, i.date, i.time, i.ip, i.username)
     userLoggedIn = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date) & Q(action__iexact="user_logged_in")).count()
     userLoggedOut = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date) & Q(action__iexact="user_logged_out")).count()
-    print("user Logged in count:",userLoggedIn)
-    print("user Logged out count:",userLoggedOut)
-    return render(request,'App/today.html', {'userTodayData':userTodayData})
+    # print("user Logged in count:",userLoggedIn)
+    # print("user Logged out count:",userLoggedOut)
+    return render(request,'App/show.html', {'userData':userTodayData, 'userLoggedIn':userLoggedIn, 'userLoggedOut':userLoggedOut})

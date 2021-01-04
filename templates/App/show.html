@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="container my-4">
+    <table id="example" class="display nowrap" style="width:100%">
+        <thead>
+            <th>S.No</th>
+            <th>Username</th>
+            <th>Action</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>IP Address</th>
+        </thead>
+        <tbody>
+            {% for i in userData %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{i.username}}</td>
+                <td>{{i.action}}</td>
+                <td>{{i.date}}</td>
+                <td>{{i.time}}</td>
+                <td>{{i.ip}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4><b>How many time user login: </b>{{userLoggedIn}} times</h3>
+    <h4><b>How many time user logout: </b>{{userLoggedOut}} times</h3>
+</div>
+{% endblock body %}
