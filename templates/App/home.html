@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th scope="col">S.No</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Login Record</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{user.username}}</td>
+                <td>{{user.email}}</td>
+                <td>
+                <a href="/last?id={{user.id}}" class="btn btn-primary btn-sm">Last 30 Days</a>
+                <a href="/yesterday?id={{user.id}}" class="btn btn-info btn-sm">Yesterday</a>
+                <a href="/today?id={{user.id}}" class="btn btn-danger btn-sm">Today</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock body %}
