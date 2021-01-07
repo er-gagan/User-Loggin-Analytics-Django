@@ -9,6 +9,46 @@ def home(request):
     users = User.objects.all()
     return render(request,'App/home.html',{'users':users})
 
+def HourMinuteCalculator(data):
+    l=[]
+    for i in data:
+        if i.action == "user_logged_in":
+            LoginDate = i.date
+            LoginTime = i.time
+            l.append(["login",LoginDate,LoginTime])
+        elif i.action == "user_logged_out":
+            LogoutDate = i.date
+            LogoutTime = i.time
+            l.append(["logout",LogoutDate,LogoutTime])
+        if l[0][0] == "logout":
+            del l[0]
+
+    m = []
+    for j in l:
+        YEAR = j[1].year
+        MONTH = j[1].month
+        DAY = j[1].day
+        HOUR = j[2].hour
+        MINUTE = j[2].minute
+        SECOND = j[2].second
+        m.append([YEAR,MONTH,DAY,HOUR,MINUTE,SECOND])
+
+    if len(m) % 2 == 0:
+        pass
+    else:
+        m.pop()
+    
+    HM = []
+    for jk in range(0,len(m),2): 
+        TL = m[jk]+m[jk+1]
+        b = datetime.datetime(TL[0], TL[1], TL[2], TL[3], TL[4], TL[5]) #login
+        a = datetime.datetime(TL[6], TL[7], TL[8], TL[9], TL[10], TL[11]) #logout
+        H = a-b
+        M = H.total_seconds() / 60 # minute
+        H = M / 60  #hour
+        HM.append([H,M])
+    return HM
+
 def last(request):
     Id = request.GET['id']
     DatePrev31Day = datetime.datetime.now()-datetime.timedelta(days=31)
@@ -23,12 +63,13 @@ def last(request):
     username = user.username
 
     userLast30daysData = AuditEntry.objects.filter(username__iexact=username)
-    # for i in userLast30daysData:
-    #     print(i.action, i.date, i.time, i.ip, i.username)
+    
+    tup = HourMinuteCalculator(userLast30daysData)
+    print(tup)
+
     userLoggedIn = AuditEntry.objects.filter(Q(username__iexact=username) & Q(action__iexact="user_logged_in")).count()
     userLoggedOut = AuditEntry.objects.filter(Q(username__iexact=username) & Q(action__iexact="user_logged_out")).count()
-    # print("user Logged in count:",userLoggedIn)
-    # print("user Logged out count:",userLoggedOut)
+    
     return render(request,'App/show.html', {'userData':userLast30daysData, 'userLoggedIn':userLoggedIn, 'userLoggedOut':userLoggedOut})
 
 def yesterday(request):
@@ -44,12 +85,12 @@ def yesterday(request):
     date = year+"-"+month+"-"+day
 
     userYesterdayData = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date))
-    # for i in userYesterdayData:
-    #     print(i.action, i.date, i.time, i.ip, i.username)
+    
+    tup = HourMinuteCalculator(userYesterdayData)
+    print(tup)
+    
     userLoggedIn = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date) & Q(action__iexact="user_logged_in")).count()
     userLoggedOut = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date) & Q(action__iexact="user_logged_out")).count()
-    # print("user Logged in count:",userLoggedIn)
-    # print("user Logged out count:",userLoggedOut)
     return render(request,'App/show.html', {'userData':userYesterdayData, 'userLoggedIn':userLoggedIn, 'userLoggedOut':userLoggedOut})
 
 def today(request):
@@ -65,10 +106,10 @@ def today(request):
     date = year+"-"+month+"-"+day
 
     userTodayData = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date))
-    # for i in userTodayData:
-    #     print(i.action, i.date, i.time, i.ip, i.username)
+
+    tup = HourMinuteCalculator(userTodayData)
+    print(tup)
+
     userLoggedIn = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date) & Q(action__iexact="user_logged_in")).count()
     userLoggedOut = AuditEntry.objects.filter(Q(username__iexact=username) & Q(date__iexact=date) & Q(action__iexact="user_logged_out")).count()
-    # print("user Logged in count:",userLoggedIn)
-    # print("user Logged out count:",userLoggedOut)
     return render(request,'App/show.html', {'userData':userTodayData, 'userLoggedIn':userLoggedIn, 'userLoggedOut':userLoggedOut})
